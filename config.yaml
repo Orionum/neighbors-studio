@@ -1,0 +1,63 @@
+# ============================================================
+#  "Соседи" — настройки конвейера. Меняйте только значения
+#  после двоеточия. Строки с # — комментарии.
+# ============================================================
+
+# Выключатель: false — конвейер пропускает запуски (пауза).
+enabled: true
+
+# Язык подписи-крючка на видео и названия: en или ru.
+language: en
+
+# Сколько частей (актов) в серии. Каждый акт ~8–10 секунд.
+# 2 акта ≈ 20 секунд, 3 акта ≈ 30 секунд (дороже на треть).
+acts: 2
+
+# Приватность загрузки на YouTube: private | unlisted | public.
+# Пока проект не прошёл проверку YouTube, видео в любом случае
+# будут приватными — публикуете одним нажатием в YouTube Studio.
+youtube_privacy: private
+
+# Категория YouTube: 15 = Животные, 1 = Мультфильмы и фильмы.
+youtube_category: "15"
+
+# Проверка сценария вторым агентом-критиком (почти бесплатно).
+critic_enabled: true
+# Если оценка критика ниже этой, сценарий переписывается один раз.
+critic_min_score: 7
+
+# Модели Google (менять только если Google их переименует).
+models:
+  text: gemini-3.8-flash
+  image: gemini-nano-banana-2.1
+  video: gemini-omni-1.1-flash
+
+# Разрешение видео от генератора: 720p (дешевле) или 1080p.
+video_resolution: 720p
+
+# Общий стиль для всех картинок и видео.
+style: >-
+  Stylized 3D animation, soft cinematic lighting, warm pastel colors,
+  expressive cartoon animals with big eyes, cozy suburban backyard with
+  a low wooden fence between two small houses. No humans.
+
+# Персонажи. Ключ — имя, prompt — внешность (по-английски).
+characters:
+  Boris:
+    family: cats
+    prompt: a large chubby orange tabby cat, round belly, white chest, sleepy half-closed eyes, smug expression
+  Mia:
+    family: cats
+    prompt: an elegant white long-haired fluffy cat, bright blue eyes, pink collar with a small golden bell
+  Pixel:
+    family: cats
+    prompt: a tiny orange-and-white kitten, huge green eyes, one folded ear, tail always up
+  Rex:
+    family: dogs
+    prompt: a big golden retriever, tongue always out, red bandana, goofy happy face
+  Daisy:
+    family: dogs
+    prompt: a ginger corgi with a white face, short legs, yellow bow on her head, determined look
+  Bobo:
+    family: dogs
+    prompt: a fluffy golden puppy with short corgi legs, pointy ears, dirt on his nose, clumsy
