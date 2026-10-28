@@ -1,0 +1,65 @@
+name: Neighbors daily episode
+
+on:
+  schedule:
+    # Каждый день в 06:41 UTC = 08:41 по Бухаресту (зимнее время).
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "daily = новая серия, refs = недостающие эталоны, refs-all = все эталоны заново, test = проверка без затрат"
+        default: daily
+        type: choice
+        options: [daily, refs, refs-all, test]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neighbors-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg and fonts
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg fonts-dejavu-core
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        run: python -m pipeline.main --mode "${{ github.event.inputs.mode || 'daily' }}"
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Save history and character images
+        if: always()
+        run: |
+          mkdir -p data characters
+          git config user.name "neighbors-bot"
+          git config user.email "neighbors-bot@users.noreply.github.com"
+          git add -A data characters
+          git diff --cached --quiet || (git commit -m "Episode update $(date -u +%F)" && git push)
+
+      - name: Keep the video for 14 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: episode-${{ github.run_number }}
+          path: output/*.mp4
+          retention-days: 14
+          if-no-files-found: ignore
